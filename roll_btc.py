@@ -12,21 +12,19 @@ dice_rolls = ""
 
 while dice_rolls == "":
     print
-    print "Input Guide:               |" + "-" * 99 + "|"
+    print "Input Guide:" + " " * 15 + "|" + "-" * 99 + "|"
     dice_rolls = raw_input("Enter 99 Dice Rolls (1-6):  ")
     for char in dice_rolls:
         if char not in '123456':
             print " *Error: Only characters 1-6. Try again:"
-            dice_rolls = ""
-            break
-        if len( dice_rolls ) > 99:
-            print " *Error: Too many characters. Try again:"
-            dice_rolls = ""
-            break
-        if int( dice_rolls.replace( '6', '0' ), 6 ) == 0:
-            print " *Error: Zero is an invalid private key. Try again:"
-            dice_rolls = ""
-            break
+            dice_rolls = ""; break
+    if  dice_rolls == "": continue
+    if len( dice_rolls ) > 99:
+        print " *Error: Too many characters. Try again:"
+        dice_rolls = ""; continue
+    if int( dice_rolls.replace( '6', '0' ), 6 ) == 0:
+        print " *Error: Zero is an invalid private key. Try again:"
+        dice_rolls = ""
 
 
 
@@ -86,6 +84,7 @@ def EC_double( P ):
 # Elliptic Curve Point Multiplication:
 
 def EC_multiply( P, number ):
+    if number == 0 or number >= order: raise Exception("Invalid Private Key")
     binary = '{:b}'.format(number)[1:]
     R = P
     for bit in binary:
@@ -166,7 +165,7 @@ def sha256( message_hex ):
            return number % 2**32
 
 
-    # Rotate Left:
+    # Rotate Right:
 
     def rotate_right( number, x ):
         bits       = '{:032b}'.format( number )
@@ -537,13 +536,13 @@ c_address_58      = base58( c_address_hex )
 ##### Program Output #####
 
 
-print
+print "  ( 6 -> 0 )"
 print "Private Key (base  6):     " , dice_rolls.replace( '6', '0' )
 print "Private Key (base 10):     " , private_key
 print "Private Key (base 16):     " , privkey_hex
 print
 print "Wallet Import Format:      "
-print "  Add Prefix:            "   , '80' + privkey_hex
+print "  Prefix + Privkey:      "   , '80' + privkey_hex
 print "  SHA-256:                 " , sha256( '80' + privkey_hex )
 print "  SHA-256 Again:           " , sha256( sha256( '80' + privkey_hex ) )
 print "  Privkey Checksum:        " , privkey_checksum
